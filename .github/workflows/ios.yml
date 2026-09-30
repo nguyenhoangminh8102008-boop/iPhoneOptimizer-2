@@ -1,0 +1,30 @@
+name: Build iOS
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Bước này rất quan trọng nếu bạn dùng CocoaPods
+      # Nếu không dùng, bạn có thể xóa bước này
+      - name: Install Dependencies
+        run: |
+          if [ -f "Podfile" ]; then
+            pod install
+          fi
+
+      - name: Build
+        run: |
+          # Nếu có file .xcworkspace (do dùng Pods), dùng dòng dưới:
+          # xcodebuild -workspace iPhoneOptimizer.xcworkspace -scheme iPhoneOptimizer -sdk iphonesimulator -configuration Release CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO
+          
+          # Nếu chỉ có file .xcodeproj, dùng dòng dưới:
+          xcodebuild -project iPhoneOptimizer.xcodeproj -scheme iPhoneOptimizer -sdk iphonesimulator -configuration Release CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO
